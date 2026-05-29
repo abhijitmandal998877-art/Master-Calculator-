@@ -1,0 +1,6 @@
+{
+  "name": "Master Calculator",
+  "description": "Smart weight-price calculator for shopkeepers and customers to calculate price by weight and weight by price with offline local history and beautiful developer contact form.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

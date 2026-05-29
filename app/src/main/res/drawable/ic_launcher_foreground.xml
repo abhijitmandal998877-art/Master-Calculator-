@@ -1,0 +1,65 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Outer Decorative Glow Ring -->
+    <group
+        android:scaleX="0.85"
+        android:scaleY="0.85"
+        android:translateX="8.1"
+        android:translateY="8.1">
+        
+        <!-- Calculator Platform Base -->
+        <path
+            android:fillColor="#0F2027"
+            android:pathData="M 28 22 h 52 a 8 8 0 0 1 8 8 v 48 a 8 8 0 0 1 -8 8 H 28 a 8 8 0 0 1 -8 -8 V 30 a 8 8 0 0 1 8 -8 Z"/>
+        
+        <!-- Outer Glowing Accent Edge -->
+        <path
+            android:strokeColor="#00E676"
+            android:strokeWidth="2.5"
+            android:strokeLineCap="round"
+            android:pathData="M 28 22 h 52 a 8 8 0 0 1 8 8 v 48 a 8 8 0 0 1 -8 8 H 28 a 8 8 0 0 1 -8 -8 V 30 a 8 8 0 0 1 8 -8 Z"/>
+
+        <!-- Display Screen -->
+        <path
+            android:fillColor="#1E3540"
+            android:pathData="M 34 28 h 40 v 14 H 34 Z"/>
+        <path
+            android:strokeColor="#00B0FF"
+            android:strokeWidth="1.5"
+            android:pathData="M 34 28 h 40 v 14 H 34 Z"/>
+
+        <!-- Screen text indicator (simulate Weight/Price output) -->
+        <path
+            android:fillColor="#00E676"
+            android:pathData="M 38 34 h 16 v 2 H 38 Z M 64 34 h 6 v 2 H 64 Z"/>
+
+        <!-- Grid of Buttons -->
+        <!-- Row 1 -->
+        <path android:fillColor="#FFFFFF" android:pathData="M 34 48 h 8 v 6 H 34 Z"/>
+        <path android:fillColor="#FFFFFF" android:pathData="M 46 48 h 8 v 6 H 46 Z"/>
+        <path android:fillColor="#FFFFFF" android:pathData="M 58 48 h 8 v 6 H 58 Z"/>
+        <path android:fillColor="#00B0FF" android:pathData="M 70 48 h 4 v 6 H 70 Z"/>
+
+        <!-- Row 2 -->
+        <path android:fillColor="#FFFFFF" android:pathData="M 34 58 h 8 v 6 H 34 Z"/>
+        <path android:fillColor="#FFFFFF" android:pathData="M 46 58 h 8 v 6 H 46 Z"/>
+        <path android:fillColor="#FFFFFF" android:pathData="M 58 58 h 8 v 6 H 58 Z"/>
+        <path android:fillColor="#00B0FF" android:pathData="M 70 58 h 4 v 6 H 70 Z"/>
+
+        <!-- Row 3 -->
+        <path android:fillColor="#FFFFFF" android:pathData="M 34 68 h 8 v 6 H 34 Z"/>
+        <path android:fillColor="#FFFFFF" android:pathData="M 46 68 h 8 v 6 H 46 Z"/>
+        <path android:fillColor="#00E676" android:pathData="M 58 68 h 16 v 6 H 58 Z"/> <!-- Merged '=' key -->
+    </group>
+
+    <!-- Overlay hanger/scale pointer on top representing scales/weights concept -->
+    <path
+        android:strokeColor="#00E676"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M 54 10 L 54 22 M 42 16 L 66 16"/>
+</vector>
