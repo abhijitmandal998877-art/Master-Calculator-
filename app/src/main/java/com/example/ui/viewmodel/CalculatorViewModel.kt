@@ -24,12 +24,19 @@ import java.text.DecimalFormat
 class CalculatorViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: CalculationRepository
 
+    // App Theme State (persistent via SharedPreferences)
+    val isDarkMode = MutableStateFlow(false)
+
     init {
         val database = AppDatabase.getDatabase(application)
         repository = CalculationRepository(database.calculationDao())
         
         // Auto-delete history older than 3 days on startup
         pruneOldHistory()
+
+        // Load dark mode preference
+        val prefs = application.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        isDarkMode.value = prefs.getBoolean("dark_mode", false)
     }
 
     val historyState: StateFlow<List<CalculationEntity>> = repository.allCalculations
@@ -155,6 +162,16 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
                     outputWeightGrams = totalWeight
                 )
             )
+        }
+    }
+
+    fun toggleDarkMode() {
+        val newValue = !isDarkMode.value
+        isDarkMode.value = newValue
+        val prefs = getApplication<Application>().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("dark_mode", newValue).apply()
+        viewModelScope.launch {
+            _uiEvent.emit(UiEvent.TriggerHaptics)
         }
     }
 

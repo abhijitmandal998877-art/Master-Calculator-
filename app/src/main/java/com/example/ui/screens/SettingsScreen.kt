@@ -55,19 +55,32 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
     val successText by viewModel.contactSuccessMessage.collectAsState()
     val errorText by viewModel.contactErrorMessage.collectAsState()
 
-    // Screen BG gradient (Deep cosmic slate)
-    val darkBlueGradient = Brush.verticalGradient(
-        colors = listOf(
-            Color(0xFF0F2027),
-            Color(0xFF162A32),
-            Color(0xFF1E3540)
-        )
+    val isDark by viewModel.isDarkMode.collectAsState()
+    val bgColor = if (isDark) Color(0xFF14151C) else Color(0xFFF3F5F7)
+    val cardBgColor = if (isDark) Color(0xFF20222F) else Color.White
+    val borderStrokeColor = if (isDark) Color(0xFF2D313F) else Color(0xFFE2E8F0)
+    val textColorPrimary = if (isDark) Color(0xFFF1F5F9) else Color(0xFF1C1B1F)
+    val textColorSecondary = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+    val primaryBrandColor = if (isDark) Color(0xFFD0BCFF) else Color(0xFF6750A4)
+
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedContainerColor = cardBgColor,
+        unfocusedContainerColor = cardBgColor,
+        focusedBorderColor = primaryBrandColor,
+        unfocusedBorderColor = borderStrokeColor,
+        focusedTextColor = textColorPrimary,
+        unfocusedTextColor = textColorPrimary,
+        focusedLabelColor = primaryBrandColor,
+        unfocusedLabelColor = textColorSecondary,
+        cursorColor = primaryBrandColor,
+        unfocusedLeadingIconColor = textColorSecondary,
+        focusedLeadingIconColor = primaryBrandColor
     )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF3F5F7))
+            .background(bgColor)
     ) {
         Column(
             modifier = Modifier
@@ -81,24 +94,24 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
                     text = "Developer & Contact",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1C1B1F)
+                    color = textColorPrimary
                 )
                 Text(
                     text = "App details, developer bio, and feedback",
                     fontSize = 12.sp,
-                    color = Color(0xFF64748B)
+                    color = textColorSecondary
                 )
             }
 
             HorizontalDivider(
-                color = Color(0xFFE2E8F0),
+                color = borderStrokeColor,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
             // DEVELOPER DETAILS CARD
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                colors = CardDefaults.cardColors(containerColor = cardBgColor),
+                border = BorderStroke(1.dp, borderStrokeColor),
                 shape = RoundedCornerShape(24.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 modifier = Modifier
@@ -138,12 +151,12 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
                                 text = "Abhijit Mandal",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1C1B1F)
+                                color = textColorPrimary
                             )
                             Text(
                                 text = "Android Creator & Developer",
                                 fontSize = 13.sp,
-                                color = Color(0xFF6750A4),
+                                color = primaryBrandColor,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
@@ -160,7 +173,8 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
                                 putExtra(Intent.EXTRA_SUBJECT, "Master Calculator App Inquiry")
                             }
                             context.startActivity(Intent.createChooser(intent, "Send Email"))
-                        }
+                        },
+                        isDark = isDark
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -175,7 +189,8 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
                                 Uri.parse("https://instagram.com/imm.abhijit")
                             )
                             context.startActivity(intent)
-                        }
+                        },
+                        isDark = isDark
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -190,7 +205,8 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
                                 Uri.parse("geo:0,0?q=Rampurhat, Birbhum, West Bengal, India")
                             )
                             context.startActivity(intent)
-                        }
+                        },
+                        isDark = isDark
                     )
                 }
             }
@@ -200,13 +216,13 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
                 text = "Contact Support",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF1C1B1F),
+                color = textColorPrimary,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                colors = CardDefaults.cardColors(containerColor = cardBgColor),
+                border = BorderStroke(1.dp, borderStrokeColor),
                 shape = RoundedCornerShape(24.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 modifier = Modifier
@@ -217,7 +233,7 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
                     Text(
                         text = "Have ideas or run into issues? Submit this form directly powered by Web3Forms API.",
                         fontSize = 12.sp,
-                        color = Color(0xFF64748B),
+                        color = textColorSecondary,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
@@ -294,18 +310,8 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
                         value = contactName,
                         onValueChange = { viewModel.contactName.value = it },
                         label = { Text("Your Name") },
-                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color(0xFF64748B)) },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White,
-                            focusedBorderColor = Color(0xFF6750A4),
-                            unfocusedBorderColor = Color(0xFFCBD5E1),
-                            focusedTextColor = Color(0xFF1C1B1F),
-                            unfocusedTextColor = Color(0xFF1C1B1F),
-                            focusedLabelColor = Color(0xFF6750A4),
-                            unfocusedLabelColor = Color(0xFF64748B),
-                            cursorColor = Color(0xFF6750A4)
-                        ),
+                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                        colors = textFieldColors,
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                         modifier = Modifier
@@ -318,18 +324,8 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
                         value = contactEmail,
                         onValueChange = { viewModel.contactEmail.value = it },
                         label = { Text("Your Email Address") },
-                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color(0xFF64748B)) },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White,
-                            focusedBorderColor = Color(0xFF6750A4),
-                            unfocusedBorderColor = Color(0xFFCBD5E1),
-                            focusedTextColor = Color(0xFF1C1B1F),
-                            unfocusedTextColor = Color(0xFF1C1B1F),
-                            focusedLabelColor = Color(0xFF6750A4),
-                            unfocusedLabelColor = Color(0xFF64748B),
-                            cursorColor = Color(0xFF6750A4)
-                        ),
+                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                        colors = textFieldColors,
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
@@ -345,18 +341,8 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
                         value = contactMessage,
                         onValueChange = { viewModel.contactMessage.value = it },
                         label = { Text("Message details") },
-                        leadingIcon = { Icon(Icons.Default.Info, contentDescription = null, tint = Color(0xFF64748B)) },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White,
-                            focusedBorderColor = Color(0xFF6750A4),
-                            unfocusedBorderColor = Color(0xFFCBD5E1),
-                            focusedTextColor = Color(0xFF1C1B1F),
-                            unfocusedTextColor = Color(0xFF1C1B1F),
-                            focusedLabelColor = Color(0xFF6750A4),
-                            unfocusedLabelColor = Color(0xFF64748B),
-                            cursorColor = Color(0xFF6750A4)
-                        ),
+                        leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
+                        colors = textFieldColors,
                         minLines = 3,
                         maxLines = 5,
                         modifier = Modifier
@@ -371,8 +357,8 @@ fun SettingsScreen(viewModel: CalculatorViewModel) {
                             viewModel.submitContactForm()
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF6750A4),
-                            contentColor = Color.White
+                            containerColor = primaryBrandColor,
+                            contentColor = if (isDark) Color(0xFF21005D) else Color.White
                         ),
                         shape = RoundedCornerShape(16.dp),
                         enabled = !contactLoading,
@@ -410,12 +396,19 @@ fun DeveloperInfoRow(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     value: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isDark: Boolean = false
 ) {
+    val rowBg = if (isDark) Color(0xFF2A2D3C) else Color(0xFFF8FAFC)
+    val rowBorder = if (isDark) Color(0xFF3B4155) else Color(0xFFEDF2F7)
+    val labelColor = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+    val valColor = if (isDark) Color(0xFFF1F5F9) else Color(0xFF1C1B1F)
+    val tintColor = if (isDark) Color(0xFFD0BCFF) else Color(0xFF6750A4)
+
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
-        border = BorderStroke(1.dp, Color(0xFFEDF2F7)),
+        colors = CardDefaults.cardColors(containerColor = rowBg),
+        border = BorderStroke(1.dp, rowBorder),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -429,7 +422,7 @@ fun DeveloperInfoRow(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = Color(0xFF6750A4),
+                tint = tintColor,
                 modifier = Modifier.size(20.dp)
             )
 
@@ -438,14 +431,14 @@ fun DeveloperInfoRow(
                     text = label.uppercase(),
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF64748B),
+                    color = labelColor,
                     letterSpacing = 0.5.sp
                 )
                 Text(
                     text = value,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF1C1B1F)
+                    color = valColor
                 )
             }
         }

@@ -30,6 +30,9 @@ object Web3FormsClient {
             val requestBody = jsonObject.toString().toRequestBody(JSON)
             val request = Request.Builder()
                 .url("https://api.web3forms.com/submit")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36")
+                .addHeader("Origin", "https://web3forms.com")
+                .addHeader("Referer", "https://web3forms.com/")
                 .post(requestBody)
                 .build()
 

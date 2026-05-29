@@ -68,7 +68,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            MyApplicationTheme {
+            val isDarkMode by viewModel.isDarkMode.collectAsState()
+            MyApplicationTheme(darkTheme = isDarkMode) {
                 val haptic = LocalHapticFeedback.current
                 val context = LocalContext.current
 
@@ -115,13 +116,20 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreenContainer(viewModel: CalculatorViewModel) {
     var selectedTab by remember { mutableStateOf(AppTab.Calculator) }
+    val isDark by viewModel.isDarkMode.collectAsState()
+    
+    val scaffoldBg = if (isDark) Color(0xFF14151C) else Color(0xFFF3F5F7)
+    val bottomBarBg = if (isDark) Color(0xFF20222F) else Color.White
+    val selectedIconTint = if (isDark) Color(0xFFD0BCFF) else Color(0xFF6750A4)
+    val unselectedIconTint = if (isDark) Color(0xFF94A3B8) else Color(0xFF1C1B1F).copy(alpha = 0.6f)
+    val indicatorColor = if (isDark) Color(0xFF4F378B).copy(alpha = 0.5f) else Color(0xFFEADDFF)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Color(0xFFF3F5F7), // Match Light "Professional Polish" background
+        containerColor = scaffoldBg,
         bottomBar = {
             NavigationBar(
-                containerColor = Color.White, // Polished white navigation boundary
+                containerColor = bottomBarBg,
                 tonalElevation = 4.dp,
                 windowInsets = WindowInsets.navigationBars, // Correctly handles safe areas for gesture pills
                 modifier = Modifier.testTag("app_bottom_nav_bar")
@@ -139,11 +147,11 @@ fun MainScreenContainer(viewModel: CalculatorViewModel) {
                         },
                         label = { Text(tab.title) },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color(0xFF21005D),
-                            selectedTextColor = Color(0xFF1D192B),
-                            indicatorColor = Color(0xFFEADDFF),
-                            unselectedIconColor = Color(0xFF1C1B1F).copy(alpha = 0.6f),
-                            unselectedTextColor = Color(0xFF1C1B1F).copy(alpha = 0.6f)
+                            selectedIconColor = selectedIconTint,
+                            selectedTextColor = if (isDark) Color(0xFFF1F5F9) else Color(0xFF1C1B1F),
+                            indicatorColor = indicatorColor,
+                            unselectedIconColor = unselectedIconTint,
+                            unselectedTextColor = unselectedIconTint
                         ),
                         modifier = Modifier.testTag(tab.tag)
                     )
@@ -154,7 +162,10 @@ fun MainScreenContainer(viewModel: CalculatorViewModel) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = innerPadding.calculateBottomPadding()) // Pads out bottom navigation accurately
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding()
+                ) // Pads out top (status bar) and bottom navigation accurately
         ) {
             // Keep state alive by utilizing sliding visibility or standard layout triggers
             when (selectedTab) {

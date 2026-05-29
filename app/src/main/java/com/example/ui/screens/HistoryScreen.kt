@@ -49,12 +49,19 @@ fun HistoryScreen(viewModel: CalculatorViewModel) {
         )
     )
 
+    val isDark by viewModel.isDarkMode.collectAsState()
+    val bgColor = if (isDark) Color(0xFF14151C) else Color(0xFFF3F5F7)
+    val cardBgColor = if (isDark) Color(0xFF20222F) else Color.White
+    val borderStrokeColor = if (isDark) Color(0xFF2D313F) else Color(0xFFE2E8F0)
+    val textColorPrimary = if (isDark) Color(0xFFF1F5F9) else Color(0xFF1C1B1F)
+    val textColorSecondary = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+
     val dateFormat = remember { SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF3F5F7))
+            .background(bgColor)
     ) {
         Column(
             modifier = Modifier
@@ -74,12 +81,12 @@ fun HistoryScreen(viewModel: CalculatorViewModel) {
                         text = "History Log",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1C1B1F)
+                        color = textColorPrimary
                     )
                     Text(
                         text = "Auto-cleaned older than 3 days",
                         fontSize = 12.sp,
-                        color = Color(0xFF64748B)
+                        color = textColorSecondary
                     )
                 }
 
@@ -87,8 +94,8 @@ fun HistoryScreen(viewModel: CalculatorViewModel) {
                     IconButton(
                         onClick = { showClearConfirmDialog = true },
                         colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = Color(0xFFFEE2E2),
-                            contentColor = Color(0xFFDC2626)
+                            containerColor = if (isDark) Color(0xFF3B1E1E) else Color(0xFFFEE2E2),
+                            contentColor = if (isDark) Color(0xFFFCA5A5) else Color(0xFFDC2626)
                         ),
                         modifier = Modifier.testTag("clear_history_btn")
                     ) {
@@ -101,7 +108,7 @@ fun HistoryScreen(viewModel: CalculatorViewModel) {
             }
 
             HorizontalDivider(
-                color = Color(0xFFE2E8F0),
+                color = borderStrokeColor,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
 
@@ -117,14 +124,14 @@ fun HistoryScreen(viewModel: CalculatorViewModel) {
                     Icon(
                         imageVector = Icons.Outlined.History,
                         contentDescription = null,
-                        tint = Color(0xFF94A3B8),
+                        tint = textColorSecondary,
                         modifier = Modifier
                             .size(100.dp)
                             .padding(bottom = 16.dp)
                     )
                     Text(
                         text = "No Saved Calculations",
-                        color = Color(0xFF1C1B1F),
+                        color = textColorPrimary,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
@@ -149,7 +156,8 @@ fun HistoryScreen(viewModel: CalculatorViewModel) {
                         HistoryCard(
                             item = item,
                             formattedTime = dateFormat.format(Date(item.timestamp)),
-                            onDelete = { viewModel.deleteHistoryItem(item.id) }
+                            onDelete = { viewModel.deleteHistoryItem(item.id) },
+                            isDark = isDark
                         )
                     }
                 }
@@ -186,18 +194,32 @@ fun HistoryScreen(viewModel: CalculatorViewModel) {
 fun HistoryCard(
     item: CalculationEntity,
     formattedTime: String,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    isDark: Boolean = false
 ) {
     val isWeightToPrice = item.type == "WEIGHT_TO_PRICE"
     
+    val cardBg = if (isDark) Color(0xFF20222F) else Color.White
+    val borderCol = if (isDark) Color(0xFF2E3244) else Color(0xFFE2E8F0)
+    val textPrimary = if (isDark) Color(0xFFF1F5F9) else Color(0xFF1C1B1F)
+    val textSecondary = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+
     // Gradient accent color tags
-    val typeContainerColor = if (isWeightToPrice) Color(0xFFEADDFF) else Color(0xFFE0F2FE)
-    val typeContentColor = if (isWeightToPrice) Color(0xFF6750A4) else Color(0xFF0369A1)
+    val typeContainerColor = if (isWeightToPrice) {
+        if (isDark) Color(0xFF4F378B).copy(alpha = 0.3f) else Color(0xFFEADDFF)
+    } else {
+        if (isDark) Color(0xFF0369A1).copy(alpha = 0.3f) else Color(0xFFE0F2FE)
+    }
+    val typeContentColor = if (isWeightToPrice) {
+        if (isDark) Color(0xFFD0BCFF) else Color(0xFF6750A4)
+    } else {
+        if (isDark) Color(0xFF38BDF8) else Color(0xFF0369A1)
+    }
     val typeLabel = if (isWeightToPrice) "Weight ➔ Price" else "Money ➔ Weight"
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+        colors = CardDefaults.cardColors(containerColor = cardBg),
+        border = BorderStroke(1.dp, borderCol),
         shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         modifier = Modifier
@@ -230,7 +252,7 @@ fun HistoryCard(
                 IconButton(
                     onClick = onDelete,
                     colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = Color(0xFF94A3B8)
+                        contentColor = textSecondary
                     ),
                     modifier = Modifier
                         .size(32.dp)
@@ -256,13 +278,13 @@ fun HistoryCard(
                     Column {
                         Text(
                             text = "${item.inputWeightGrams} Grams",
-                            color = Color(0xFF1C1B1F),
+                            color = textPrimary,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.ExtraBold
                         )
                         Text(
                             text = "Rate: ₹${item.pricePerKg} / KG",
-                            color = Color(0xFF64748B),
+                            color = textSecondary,
                             fontSize = 12.sp
                         )
                     }
@@ -270,13 +292,13 @@ fun HistoryCard(
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = "₹${String.format(Locale.US, "%.2f", item.outputPrice)}",
-                            color = Color(0xFF1C1B1F),
+                            color = textPrimary,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Black
                         )
                         Text(
                             text = "Calculated Cost",
-                            color = Color(0xFF64748B),
+                            color = textSecondary,
                             fontSize = 11.sp
                         )
                     }
@@ -290,13 +312,13 @@ fun HistoryCard(
                     Column {
                         Text(
                             text = "₹${item.inputAmount}",
-                            color = Color(0xFF1C1B1F),
+                            color = textPrimary,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.ExtraBold
                         )
                         Text(
                             text = "Rate: ₹${item.pricePerKg} / KG",
-                            color = Color(0xFF64748B),
+                            color = textSecondary,
                             fontSize = 12.sp
                         )
                     }
@@ -304,13 +326,13 @@ fun HistoryCard(
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = "${String.format(Locale.US, "%.2f", item.outputWeightGrams)} g",
-                            color = Color(0xFF1C1B1F),
+                            color = textPrimary,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Black
                         )
                         Text(
                             text = "Calculated Weight",
-                            color = Color(0xFF64748B),
+                            color = textSecondary,
                             fontSize = 11.sp
                         )
                     }
@@ -322,7 +344,7 @@ fun HistoryCard(
             // Time stamp
             Text(
                 text = "Recorded at: $formattedTime",
-                color = Color(0xFF94A3B8),
+                color = textSecondary,
                 fontSize = 10.sp
             )
         }

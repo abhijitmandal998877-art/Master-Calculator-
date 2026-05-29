@@ -11,6 +11,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.DeleteOutline
@@ -61,10 +63,31 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
         )
     )
 
+    // Theme and Color specifications for "Professional Polish" (adaptive Light/Dark)
+    val isDark by viewModel.isDarkMode.collectAsState()
+    val bgColor = if (isDark) Color(0xFF14151C) else Color(0xFFF3F5F7)
+    val cardBgColor = if (isDark) Color(0xFF20222F) else Color.White
+    val borderStrokeColor = if (isDark) Color(0xFF2D313F) else Color(0xFFE2E8F0)
+    val textColorPrimary = if (isDark) Color(0xFFF1F5F9) else Color(0xFF1C1B1F)
+    val textColorSecondary = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+    val inputHeadingColor = if (isDark) Color(0xFFD0BCFF) else Color(0xFF6750A4)
+
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedContainerColor = cardBgColor,
+        unfocusedContainerColor = cardBgColor,
+        focusedBorderColor = if (isDark) Color(0xFFB58AFF) else Color(0xFF6750A4),
+        unfocusedBorderColor = borderStrokeColor,
+        focusedTextColor = textColorPrimary,
+        unfocusedTextColor = textColorPrimary,
+        focusedLabelColor = if (isDark) Color(0xFFB58AFF) else Color(0xFF6750A4),
+        unfocusedLabelColor = textColorSecondary,
+        cursorColor = if (isDark) Color(0xFFB58AFF) else Color(0xFF6750A4)
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF3F5F7))
+            .background(bgColor)
     ) {
         Column(
             modifier = Modifier
@@ -76,7 +99,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 16.dp),
+                    .padding(top = 16.dp, bottom = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -107,38 +130,58 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
                             text = "Master Calculator",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1C1B1F)
+                            color = textColorPrimary
                         )
                         Text(
                             text = "Weight & Price Assistant",
                             fontSize = 12.sp,
-                            color = Color(0xFF64748B)
+                            color = textColorSecondary
                         )
                     }
                 }
                 
-                // Clear all action
-                IconButton(
-                    onClick = { viewModel.clearAllFields() },
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Color(0xFFEADDFF),
-                        contentColor = Color(0xFF21005D)
-                    ),
-                    modifier = Modifier.testTag("reset_all_button")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = "Clear All Inputs"
-                    )
+                    // Light/Dark Theme toggle with haptics
+                    IconButton(
+                        onClick = { viewModel.toggleDarkMode() },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = if (isDark) Color(0xFF2C2F3F) else Color(0xFFEADDFF),
+                            contentColor = if (isDark) Color(0xFFD0BCFF) else Color(0xFF6750A4)
+                        ),
+                        modifier = Modifier.testTag("theme_toggle_btn")
+                    ) {
+                        Icon(
+                            imageVector = if (isDark) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = "Toggle Theme"
+                        )
+                    }
+
+                    // Clear all action
+                    IconButton(
+                        onClick = { viewModel.clearAllFields() },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = if (isDark) Color(0xFF3B1E1E) else Color(0xFFFEE2E2),
+                            contentColor = if (isDark) Color(0xFFFCA5A5) else Color(0xFFDC2626)
+                        ),
+                        modifier = Modifier.testTag("reset_all_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Clear All Inputs"
+                        )
+                    }
                 }
             }
 
             // Input Section: Base Price
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.White
+                    containerColor = cardBgColor
                 ),
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                border = BorderStroke(1.dp, borderStrokeColor),
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -149,7 +192,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
                         text = "Step 1: Set Base Price",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF6750A4),
+                        color = inputHeadingColor,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     
@@ -158,17 +201,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
                         onValueChange = { viewModel.pricePerKg.value = it },
                         label = { Text("Price Per KG (₹)") },
                         placeholder = { Text("e.g. 240") },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White,
-                            focusedBorderColor = Color(0xFF6750A4),
-                            unfocusedBorderColor = Color(0xFFCBD5E1),
-                            focusedTextColor = Color(0xFF1C1B1F),
-                            unfocusedTextColor = Color(0xFF1C1B1F),
-                            focusedLabelColor = Color(0xFF6750A4),
-                            unfocusedLabelColor = Color(0xFF64748B),
-                            cursorColor = Color(0xFF6750A4)
-                        ),
+                        colors = textFieldColors,
                         isError = priceError != null,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
@@ -192,13 +225,13 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
 
             // SECTION 1: Calculate Price by entering Weight
             HorizontalDivider(
-                color = Color(0xFFE2E8F0),
+                color = borderStrokeColor,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                colors = CardDefaults.cardColors(containerColor = cardBgColor),
+                border = BorderStroke(1.dp, borderStrokeColor),
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -213,14 +246,14 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
                         Icon(
                             imageVector = Icons.Outlined.Scale,
                             contentDescription = null,
-                            tint = Color(0xFF6750A4),
+                            tint = inputHeadingColor,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
                             text = "Calculate Total Price",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
-                            color = Color(0xFF1C1B1F)
+                            color = textColorPrimary
                         )
                     }
 
@@ -229,17 +262,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
                         onValueChange = { viewModel.weightGrams.value = it },
                         label = { Text("Weight in Grams") },
                         placeholder = { Text("e.g. 2500 (for 2.5 KG)") },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White,
-                            focusedBorderColor = Color(0xFF6750A4),
-                            unfocusedBorderColor = Color(0xFFCBD5E1),
-                            focusedTextColor = Color(0xFF1C1B1F),
-                            unfocusedTextColor = Color(0xFF1C1B1F),
-                            focusedLabelColor = Color(0xFF6750A4),
-                            unfocusedLabelColor = Color(0xFF64748B),
-                            cursorColor = Color(0xFF6750A4)
-                        ),
+                        colors = textFieldColors,
                         isError = weightError != null,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
@@ -303,7 +326,8 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
                                 title = "Total Price",
                                 resultValue = result,
                                 onCopy = { viewModel.copyToClipboard(result, "Calculated Price") },
-                                onShare = { viewModel.shareResult("Weight-Price: $result (Calculated via Master Calculator)") }
+                                onShare = { viewModel.shareResult("Weight-Price: $result (Calculated via Master Calculator)") },
+                                isDark = isDark
                             )
                         }
                     }
@@ -312,13 +336,13 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
 
             // SECTION 2: Calculate Weight by entering Money Amount
             HorizontalDivider(
-                color = Color(0xFFE2E8F0),
+                color = borderStrokeColor,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                colors = CardDefaults.cardColors(containerColor = cardBgColor),
+                border = BorderStroke(1.dp, borderStrokeColor),
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -333,14 +357,14 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
                         Icon(
                             imageVector = Icons.Default.SwapVert,
                             contentDescription = null,
-                            tint = Color(0xFF00A36C),
+                            tint = if (isDark) Color(0xFF00FA9A) else Color(0xFF00A36C),
                             modifier = Modifier.size(22.dp)
                         )
                         Text(
                             text = "Calculate Weight from Money",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
-                            color = Color(0xFF1C1B1F)
+                            color = textColorPrimary
                         )
                     }
 
@@ -349,17 +373,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
                         onValueChange = { viewModel.amountRupees.value = it },
                         label = { Text("Amount in Rupees (₹)") },
                         placeholder = { Text("e.g. 100") },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White,
-                            focusedBorderColor = Color(0xFF6750A4),
-                            unfocusedBorderColor = Color(0xFFCBD5E1),
-                            focusedTextColor = Color(0xFF1C1B1F),
-                            unfocusedTextColor = Color(0xFF1C1B1F),
-                            focusedLabelColor = Color(0xFF6750A4),
-                            unfocusedLabelColor = Color(0xFF64748B),
-                            cursorColor = Color(0xFF6750A4)
-                        ),
+                        colors = textFieldColors,
                         isError = amountError != null,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
@@ -423,7 +437,8 @@ fun CalculatorScreen(viewModel: CalculatorViewModel) {
                                 title = "You Get",
                                 resultValue = result,
                                 onCopy = { viewModel.copyToClipboard(result, "Calculated Weight") },
-                                onShare = { viewModel.shareResult("Money-Weight: $result (Calculated via Master Calculator)") }
+                                onShare = { viewModel.shareResult("Money-Weight: $result (Calculated via Master Calculator)") },
+                                isDark = isDark
                             )
                         }
                     }
@@ -441,13 +456,21 @@ fun ResultCard(
     title: String,
     resultValue: String,
     onCopy: () -> Unit,
-    onShare: () -> Unit
+    onShare: () -> Unit,
+    isDark: Boolean = false
 ) {
+    val cardBg = if (isDark) Color(0xFF282B3D) else Color.White
+    val borderColor = if (isDark) Color(0xFF3B4155) else Color(0xFF6750A4).copy(alpha = 0.15f)
+    val textPrimary = if (isDark) Color(0xFFF1F5F9) else Color(0xFF1C1B1F)
+    val textSecondary = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+    val iconContainerColor = if (isDark) Color(0xFF4F378B).copy(alpha = 0.3f) else Color(0x126750A4)
+    val iconContentColor = if (isDark) Color(0xFFD0BCFF) else Color(0xFF6750A4)
+
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = Color.White // Elegant white card with crisp details and border
+            containerColor = cardBg
         ),
-        border = BorderStroke(1.2.dp, Color(0xFF6750A4).copy(alpha = 0.15f)),
+        border = BorderStroke(1.2.dp, borderColor),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier
@@ -460,7 +483,7 @@ fun ResultCard(
                 text = title.uppercase(),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF64748B),
+                color = textSecondary,
                 letterSpacing = 1.sp
             )
             
@@ -470,7 +493,7 @@ fun ResultCard(
                 text = resultValue,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Black,
-                color = Color(0xFF1C1B1F)
+                color = textPrimary
             )
             
             Spacer(modifier = Modifier.height(12.dp))
@@ -484,8 +507,8 @@ fun ResultCard(
                 IconButton(
                     onClick = onCopy,
                     colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Color(0x126750A4),
-                        contentColor = Color(0xFF6750A4)
+                        containerColor = iconContainerColor,
+                        contentColor = iconContentColor
                     ),
                     modifier = Modifier.size(36.dp).testTag("copy_result_button")
                 ) {
@@ -502,8 +525,8 @@ fun ResultCard(
                 IconButton(
                     onClick = onShare,
                     colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Color(0x126750A4),
-                        contentColor = Color(0xFF6750A4)
+                        containerColor = iconContainerColor,
+                        contentColor = iconContentColor
                     ),
                     modifier = Modifier.size(36.dp).testTag("share_result_button")
                 ) {
