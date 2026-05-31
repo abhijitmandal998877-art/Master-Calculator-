@@ -78,6 +78,7 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
     sealed interface UiEvent {
         object TriggerHaptics : UiEvent
         data class ShowToast(val message: String) : UiEvent
+        data class SpeakAndNotify(val notificationText: String, val speechText: String) : UiEvent
     }
 
     private fun pruneOldHistory() {
@@ -111,6 +112,12 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch {
             _uiEvent.emit(UiEvent.TriggerHaptics)
             _uiEvent.emit(UiEvent.ShowToast("Price Calculated & Saved"))
+            _uiEvent.emit(
+                UiEvent.SpeakAndNotify(
+                    notificationText = "Price for $weightVal g: ₹$formattedPrice (at ₹$priceVal/KG)",
+                    speechText = "Success! Price is $formattedPrice rupees"
+                )
+            )
 
             // Save to database
             repository.insert(
@@ -150,6 +157,12 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch {
             _uiEvent.emit(UiEvent.TriggerHaptics)
             _uiEvent.emit(UiEvent.ShowToast("Weight Calculated & Saved"))
+            _uiEvent.emit(
+                UiEvent.SpeakAndNotify(
+                    notificationText = "Weight for ₹$amountVal: $formattedWeight g (at ₹$priceVal/KG)",
+                    speechText = "Success! Weight is $formattedWeight grams"
+                )
+            )
 
             // Save to database
             repository.insert(
